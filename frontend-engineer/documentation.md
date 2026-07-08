@@ -29,6 +29,12 @@ Vanilla css sufficient. No need for frameworks
 **UI lib**
 Material ui for ready components
 
+**Testing lib**
+React testing library, Jest
+
+**Documentation**
+Storybook
+
 ## Tasks
 
 - [x] Create the React and TypeScript app.
