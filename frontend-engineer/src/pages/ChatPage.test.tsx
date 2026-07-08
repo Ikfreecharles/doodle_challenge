@@ -88,4 +88,12 @@ describe("ChatPage's layout", () => {
       marginRight: 'auto',
     });
   });
+  it('sets padding to 8px around message composer and button', () => {
+    renderChatPage(<ChatPage />);
+
+    expect(screen.getByTestId('chat-page-composer-inner')).toHaveStyle({
+      padding: '8px',
+      gap: '8px',
+    });
+  });
 });

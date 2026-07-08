@@ -38,7 +38,7 @@ Storybook
 ## Tasks
 
 - [x] Create the React and TypeScript app.
-- [ ] Build the chat layout from the provided assets.
+- [x] Build the chat layout from the provided assets.
 - [ ] Connect to the backend messages API.
 - [ ] Implement message sending.
 - [ ] Add responsive and accessible interaction states.

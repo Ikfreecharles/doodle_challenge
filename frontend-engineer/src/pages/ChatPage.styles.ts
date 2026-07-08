@@ -38,11 +38,13 @@ export const ChatPageComposerSx: SxProps<Theme> = [
 ];
 
 export const ChatPageComposerInnerSx: SxProps<Theme> = [
-  {
+  (theme) => ({
     width: '100%',
     maxWidth: '640px',
     display: 'flex',
     marginLeft: 'auto',
     marginRight: 'auto',
-  },
+    padding: theme.spacing(1),
+    gap: theme.spacing(1),
+  }),
 ];

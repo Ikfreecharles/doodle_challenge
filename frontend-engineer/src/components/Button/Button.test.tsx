@@ -53,11 +53,6 @@ describe('Button', () => {
     expect(getComputedStyle(getButton()).height).toBe('60px');
     expect(getComputedStyle(getButton()).padding).toBe('0px 24px');
   });
-
-  it('should have a margin of 8px all around except left', () => {
-    renderButton(<Button onClick={jest.fn()} />);
-    expect(getComputedStyle(getButton()).margin).toBe('8px 8px 8px 0px');
-  });
 });
 
 describe("Button's accessibility", () => {

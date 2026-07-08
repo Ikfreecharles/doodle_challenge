@@ -64,11 +64,6 @@ describe('InputField', () => {
 
     expect(getInputFieldInput()).toBeDisabled();
   });
-
-  it('should have a margin of 8px all around', () => {
-    renderInputField(<InputField value="" onChange={jest.fn()} disabled />);
-    expect(getComputedStyle(getInputField()).margin).toBe('8px');
-  });
 });
 
 describe("InputField's accessibility", () => {

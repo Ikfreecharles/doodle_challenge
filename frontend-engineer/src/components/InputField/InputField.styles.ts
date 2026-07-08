@@ -11,7 +11,6 @@ export const InputFieldSx: SxProps<Theme> = [
     borderRadius: theme.spacing(0.625),
     backgroundColor: theme.palette.background.paper,
     color: theme.palette.text.primary,
-    margin: theme.spacing(1),
     '& .MuiInputBase-input': {
       padding: 0,
     },

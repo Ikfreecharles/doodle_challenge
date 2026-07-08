@@ -6,7 +6,6 @@ export const ButtonSx: SxProps<Theme> = [
     height: '60px',
     borderRadius: theme.spacing(0.625),
     padding: theme.spacing(0, 3),
-    margin: theme.spacing(1, 1, 1, 0),
     backgroundColor: theme.palette.warning.main,
     color: theme.palette.common.white,
     boxShadow: 'none',
