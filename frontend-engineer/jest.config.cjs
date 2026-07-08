@@ -7,6 +7,7 @@ const config = {
   testMatch: ['<rootDir>/src/**/*.test.ts?(x)'],
   moduleNameMapper: {
     '\\.(css|less|scss|sass)$': '<rootDir>/src/test/styleMock.ts',
+    '\\.(png|jpg|jpeg|gif|webp)$': '<rootDir>/src/test/imageMock.ts',
   },
   transform: {
     '^.+\\.(ts|tsx)$': [

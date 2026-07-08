@@ -1,31 +1,34 @@
-import { TextField } from '@mui/material';
+import Input from '@mui/material/Input';
 
-import './InputField.css';
+import { InputFieldSx } from './InputField.styles';
 
 export type InputFieldProps = {
   value: string;
   onChange: (value: string) => void;
+  disabled?: boolean;
   placeholder?: string;
 };
 
 export const InputField = ({
   value,
   onChange,
-  placeholder = 'Type a message',
+  disabled = false,
+  placeholder = 'Message',
 }: InputFieldProps) => {
   return (
-    <TextField
-      className="input-field"
+    <Input
+      data-testid="input-field"
+      disableUnderline
+      disabled={disabled}
       fullWidth
       placeholder={placeholder}
-      slotProps={{
-        htmlInput: {
-          'data-testid': 'input-field',
-        },
+      inputProps={{
+        'aria-label': placeholder,
+        'data-testid': 'input-field-input',
       }}
       value={value}
       onChange={(event) => onChange(event.target.value)}
-      size="small"
+      sx={InputFieldSx}
     />
   );
 };

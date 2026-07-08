@@ -9,8 +9,14 @@ export const theme = createTheme({
     background: {
       default: '#f7f7f5',
     },
+    primary: {
+      main: '#1c8fca',
+    },
     secondary: {
       main: '#fff9c9',
+    },
+    warning: {
+      main: '#ff7f65',
     },
     text: {
       secondary: '#b8b8b8',

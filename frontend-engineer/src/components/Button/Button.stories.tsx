@@ -7,6 +7,7 @@ const meta = {
   component: Button,
   tags: ['button', 'autodocs'],
   args: {
+    content: 'Send',
     disabled: false,
     onClick: () => undefined,
   },
@@ -16,7 +17,7 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-export const Enabled: Story = {};
+export const Default: Story = {};
 
 export const Disabled: Story = {
   args: {
@@ -24,12 +25,12 @@ export const Disabled: Story = {
   },
 };
 
-export const CssCheck: Story = {
+export const OnHoverCheck: Story = {
   play: async ({ canvas }) => {
     const button = canvas.getByTestId('button');
 
     await expect(getComputedStyle(button).backgroundColor).toBe(
-      'rgb(25, 118, 210)'
+      'rgb(255, 127, 101)'
     );
   },
 };

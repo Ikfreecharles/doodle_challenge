@@ -1,23 +1,28 @@
 import { Button as MuiButton } from '@mui/material';
 
-import './Button.css';
+import { ButtonSx } from './Button.styles';
 
 export type ButtonProps = {
   onClick: () => void;
+  content?: string;
   disabled?: boolean;
 };
 
-export const Button = ({ onClick, disabled = false }: ButtonProps) => {
+export const Button = ({
+  onClick,
+  content = 'Send',
+  disabled = false,
+}: ButtonProps) => {
   return (
     <MuiButton
-      className="button"
       data-testid="button"
       disabled={disabled}
       onClick={onClick}
+      sx={ButtonSx}
       type="button"
       variant="contained"
     >
-      Send
+      {content}
     </MuiButton>
   );
 };

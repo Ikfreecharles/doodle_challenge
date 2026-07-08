@@ -1,4 +1,5 @@
 import type { StorybookConfig } from '@storybook/react-vite';
+import { mergeConfig } from 'vite';
 
 const config: StorybookConfig = {
   stories: ['../src/**/*.stories.@(js|jsx|mjs|ts|tsx)'],
@@ -10,6 +11,12 @@ const config: StorybookConfig = {
     '@storybook/addon-mcp',
   ],
   framework: '@storybook/react-vite',
+  viteFinal: async (config) =>
+    mergeConfig(config, {
+      optimizeDeps: {
+        include: ['@mui/material/Input'],
+      },
+    }),
 };
 
 export default config;

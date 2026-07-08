@@ -1,32 +1,112 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { ReactElement } from 'react';
 
 import { InputField } from './InputField';
+import { AppThemeProvider } from '../../theme/AppThemeProvider';
+
+const renderInputField = (inputField: ReactElement) => {
+  return render(<AppThemeProvider>{inputField}</AppThemeProvider>);
+};
+
+const getInputField = () => screen.getByTestId('input-field');
+const getInputFieldInput = () => screen.getByTestId('input-field-input');
 
 describe('InputField', () => {
   it('renders the provided message value', () => {
-    render(<InputField value="Hello team" onChange={jest.fn()} />);
+    renderInputField(<InputField value="Hello team" onChange={jest.fn()} />);
 
-    expect(screen.getByTestId('input-field')).toHaveValue('Hello team');
+    expect(getInputFieldInput()).toHaveValue('Hello team');
   });
 
-  it('applies the input field stylesheet class', () => {
-    render(<InputField value="" onChange={jest.fn()} />);
+  it('renders Message as the default placeholder', () => {
+    renderInputField(<InputField value="" onChange={jest.fn()} />);
 
-    expect(
-      screen.getByTestId('input-field').closest('.input-field')
-    ).not.toBeNull();
+    expect(getInputFieldInput()).toHaveAttribute('placeholder', 'Message');
   });
 
   it('calls onChange when the user types', async () => {
     const user = userEvent.setup();
     const handleChange = jest.fn();
 
-    render(<InputField value="" onChange={handleChange} />);
+    renderInputField(<InputField value="" onChange={handleChange} />);
 
-    await user.type(screen.getByTestId('input-field'), 'Hi');
+    await user.type(getInputFieldInput(), 'Hi');
 
     expect(handleChange).toHaveBeenCalledWith('H');
     expect(handleChange).toHaveBeenCalledWith('i');
+  });
+
+  it('renders with a white background', () => {
+    renderInputField(<InputField value="" onChange={jest.fn()} />);
+
+    expect(getComputedStyle(getInputField()).backgroundColor).toBe(
+      'rgb(255, 255, 255)'
+    );
+  });
+
+  it('renders with the border radius', () => {
+    renderInputField(<InputField value="" onChange={jest.fn()} />);
+
+    expect(getComputedStyle(getInputField()).borderRadius).toBe('5px');
+  });
+
+  it('renders with the input height and horizontal padding', () => {
+    renderInputField(<InputField value="" onChange={jest.fn()} />);
+
+    expect(getComputedStyle(getInputField()).height).toBe('60px');
+    expect(getComputedStyle(getInputField()).paddingLeft).toBe('8px');
+    expect(getComputedStyle(getInputField()).paddingRight).toBe('8px');
+  });
+
+  it('can be disabled', () => {
+    renderInputField(<InputField value="" onChange={jest.fn()} disabled />);
+
+    expect(getInputFieldInput()).toBeDisabled();
+  });
+
+  it('should have a margin of 8px all around', () => {
+    renderInputField(<InputField value="" onChange={jest.fn()} disabled />);
+    expect(getComputedStyle(getInputField()).margin).toBe('8px');
+  });
+});
+
+describe("InputField's accessibility", () => {
+  it('renders as an accessible textbox named by the placeholder', () => {
+    renderInputField(<InputField value="" onChange={jest.fn()} />);
+
+    expect(
+      screen.getByRole('textbox', { name: 'Message' })
+    ).toBeInTheDocument();
+  });
+
+  it('uses a custom placeholder as the accessible textbox name', () => {
+    renderInputField(
+      <InputField
+        value=""
+        onChange={jest.fn()}
+        placeholder="Write a chat message"
+      />
+    );
+
+    expect(
+      screen.getByRole('textbox', { name: 'Write a chat message' })
+    ).toBeInTheDocument();
+  });
+
+  it('communicates disabled state to assistive technology', () => {
+    renderInputField(<InputField value="" onChange={jest.fn()} disabled />);
+
+    expect(screen.getByRole('textbox', { name: 'Message' })).toBeDisabled();
+  });
+
+  it('can receive keyboard focus', async () => {
+    const user = userEvent.setup();
+
+    renderInputField(<InputField value="" onChange={jest.fn()} />);
+
+    await user.tab();
+
+    expect(screen.getByRole('textbox', { name: 'Message' })).toHaveFocus();
   });
 });
