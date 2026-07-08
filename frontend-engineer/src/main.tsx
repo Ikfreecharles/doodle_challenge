@@ -37,4 +37,3 @@ createRoot(rootElement).render(
     </Provider>
   </StrictMode>
 );
-
