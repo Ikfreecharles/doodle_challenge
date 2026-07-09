@@ -1,0 +1,10 @@
+.DS_Store
+.env
+.env.*
+.git
+.github
+coverage
+dist
+node_modules
+npm-debug.log*
+storybook-static
