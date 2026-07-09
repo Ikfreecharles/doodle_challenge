@@ -7,8 +7,8 @@ import {
 } from './store/messages/messagesSlice';
 import { AppDispatch } from './store/store';
 import {
-  ActiveUserActions,
-  ActiveUserSelectors,
+  activeUserActions,
+  activeUserSelectors,
 } from './store/activeUser/activeUserSlice';
 
 export const App = () => {
@@ -16,13 +16,13 @@ export const App = () => {
   const messages = useSelector(messagesSelectors.selectMessages);
   const isLoading = useSelector(messagesSelectors.selectMessagesLoading);
   const isSending = useSelector(messagesSelectors.selectMessageSending);
-  const activeUser = useSelector(ActiveUserSelectors.selectActiveUser);
+  const activeUser = useSelector(activeUserSelectors.selectActiveUser);
   const hasNoNewMessages = useSelector(
     messagesSelectors.selectHasNoNewMessages
   );
 
   useEffect(() => {
-    dispatch(ActiveUserActions.fetchActiveUser());
+    dispatch(activeUserActions.fetchActiveUser());
     dispatch(messagesActions.fetchMessagesRequested());
   }, [dispatch]);
 

@@ -9,7 +9,7 @@ const initialState: ActiveUserState = {
   activeUser: '',
 };
 
-const ActiveUserSlice = createSlice({
+const activeUserSlice = createSlice({
   name: 'activeUser',
   initialState,
   reducers: {
@@ -21,8 +21,8 @@ const ActiveUserSlice = createSlice({
 
 const selectActiveUser = (state: RootState) => state.activeUser.activeUser;
 
-export const ActiveUserReducer = ActiveUserSlice.reducer;
-export const ActiveUserActions = ActiveUserSlice.actions;
-export const ActiveUserSelectors = {
+export const activeUserReducer = activeUserSlice.reducer;
+export const activeUserActions = activeUserSlice.actions;
+export const activeUserSelectors = {
   selectActiveUser,
 };
