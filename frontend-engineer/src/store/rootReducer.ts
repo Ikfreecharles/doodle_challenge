@@ -1,25 +1,8 @@
-import { combineReducers, createSlice, PayloadAction } from '@reduxjs/toolkit';
-
-type AppState = {
-  initialized: boolean;
-};
-
-const initialAppState: AppState = {
-  initialized: true,
-};
-
-const appSlice = createSlice({
-  name: 'app',
-  initialState: initialAppState,
-  reducers: {
-    setInitialized: (state, action: PayloadAction<boolean>) => {
-      state.initialized = action.payload;
-    },
-  },
-});
+import { combineReducers } from '@reduxjs/toolkit';
+import { messagesReducer } from './messages/messagesSlice';
+import { ActiveUserReducer } from './activeUser/activeUserSlice';
 
 export const rootReducer = combineReducers({
-  app: appSlice.reducer,
+  messages: messagesReducer,
+  activeUser: ActiveUserReducer,
 });
-
-export const appActions = appSlice.actions;

@@ -39,7 +39,6 @@ Storybook
 
 - [x] Create the React and TypeScript app.
 - [x] Build the chat layout from the provided assets.
-- [ ] Connect to the backend messages API.
-- [ ] Implement message sending.
+- [x] Connect to the backend messages API.
+- [x] Implement message sending.
 - [ ] Add responsive and accessible interaction states.
-- [ ] Run verification before submission.

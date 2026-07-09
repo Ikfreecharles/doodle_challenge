@@ -1,4 +1,4 @@
-import { appActions } from './rootReducer';
+import { messagesActions } from './messages/messagesSlice';
 import { createAppStore } from './store';
 
 describe('store', () => {
@@ -6,8 +6,15 @@ describe('store', () => {
     const testStore = createAppStore();
 
     expect(testStore.getState()).toEqual({
-      app: {
-        initialized: true,
+      activeUser: {
+        activeUser: '',
+      },
+      messages: {
+        items: [],
+        isLoading: false,
+        isSending: false,
+        error: null,
+        hasNoNewMessages: false,
       },
     });
   });
@@ -15,8 +22,8 @@ describe('store', () => {
   it('dispatches reducer actions through the configured store', () => {
     const testStore = createAppStore();
 
-    testStore.dispatch(appActions.setInitialized(false));
+    testStore.dispatch(messagesActions.fetchMessagesRequested());
 
-    expect(testStore.getState().app.initialized).toBe(false);
+    expect(testStore.getState().messages.isLoading).toBe(true);
   });
 });

@@ -30,11 +30,21 @@ describe('InputField', () => {
     const handleChange = jest.fn();
 
     renderInputField(<InputField value="" onChange={handleChange} />);
-
     await user.type(getInputFieldInput(), 'Hi');
 
-    expect(handleChange).toHaveBeenCalledWith('H');
-    expect(handleChange).toHaveBeenCalledWith('i');
+    expect(handleChange).toHaveBeenCalledTimes(2);
+  });
+
+  it('calls onKeyDown when the user presses Enter', async () => {
+    const user = userEvent.setup();
+    const handleKeyDown = jest.fn();
+
+    renderInputField(
+      <InputField value="" onChange={jest.fn()} onKeyDown={handleKeyDown} />
+    );
+    await user.type(getInputFieldInput(), '{Enter}');
+
+    expect(handleKeyDown).toHaveBeenCalledTimes(1);
   });
 
   it('renders with a white background', () => {

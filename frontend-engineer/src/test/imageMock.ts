@@ -1,1 +1,1 @@
-export default '/src/assets/Body BG.png';
+export default 'test-file-stub';

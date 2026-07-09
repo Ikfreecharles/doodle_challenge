@@ -1,10 +1,12 @@
 import Input from '@mui/material/Input';
+import { ChangeEventHandler, KeyboardEventHandler } from 'react';
 
 import { InputFieldSx } from './InputField.styles';
 
 export type InputFieldProps = {
   value: string;
-  onChange: (value: string) => void;
+  onChange: ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement>;
+  onKeyDown?: KeyboardEventHandler<HTMLInputElement | HTMLTextAreaElement>;
   disabled?: boolean;
   placeholder?: string;
 };
@@ -12,6 +14,7 @@ export type InputFieldProps = {
 export const InputField = ({
   value,
   onChange,
+  onKeyDown,
   disabled = false,
   placeholder = 'Message',
 }: InputFieldProps) => {
@@ -27,7 +30,8 @@ export const InputField = ({
         'data-testid': 'input-field-input',
       }}
       value={value}
-      onChange={(event) => onChange(event.target.value)}
+      onChange={onChange}
+      onKeyDown={onKeyDown}
       sx={InputFieldSx}
     />
   );
