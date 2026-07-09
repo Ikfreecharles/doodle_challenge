@@ -28,6 +28,7 @@
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
     "react-redux": "^9.3.0",
+    "react-window": "^2.2.7",
     "redux-saga": "^1.5.0"
   },
   "devDependencies": {

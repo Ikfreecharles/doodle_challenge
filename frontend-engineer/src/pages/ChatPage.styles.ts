@@ -12,35 +12,16 @@ export const ChatPageRootSx: SxProps<Theme> = [
     flexDirection: 'column',
   },
 ];
-
 export const ChatPageInnerSx: SxProps<Theme> = [
   {
     width: '100%',
     flex: 1,
     minHeight: 0,
-    overflowY: 'auto',
+    overflow: 'hidden',
     paddingLeft: '0px',
     paddingRight: '0px',
   },
 ];
-
-export const ChatPageThreadSx: SxProps<Theme> = [
-  {
-    width: '100%',
-    maxWidth: '640px',
-    margin: '0px auto',
-  },
-];
-
-export const ChatPageLoaderSx: SxProps<Theme> = [
-  (theme) => ({
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: theme.spacing(1),
-  }),
-];
-
 export const ChatPageComposerSx: SxProps<Theme> = [
   {
     backgroundColor: 'primary.main',
@@ -52,7 +33,6 @@ export const ChatPageComposerSx: SxProps<Theme> = [
     right: '0px',
   },
 ];
-
 export const ChatPageComposerInnerSx: SxProps<Theme> = [
   (theme) => ({
     width: '100%',

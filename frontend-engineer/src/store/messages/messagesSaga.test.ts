@@ -6,7 +6,6 @@ import {
   takeLatest,
   takeLeading,
 } from 'redux-saga/effects';
-
 import { fetchMessages, sendMessage } from '../../api/messagesApi';
 import { messagesActions, messagesSelectors } from './messagesSlice';
 import {

@@ -1,86 +1,106 @@
-import { Box, CircularProgress, Typography } from '@mui/material';
-import { MessageBox } from '../components/MessageBox';
+import { Box } from '@mui/material';
+import { List, ListImperativeAPI, useDynamicRowHeight } from 'react-window';
 import { InputField } from '../components/InputField';
 import { Button } from '../components/Button';
 import {
   ChatPageComposerInnerSx,
   ChatPageComposerSx,
   ChatPageInnerSx,
-  ChatPageLoaderSx,
   ChatPageRootSx,
-  ChatPageThreadSx,
 } from './ChatPage.styles';
 import {
-  ChangeEventHandler,
   KeyboardEventHandler,
+  useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react';
-import { IMessage } from '../types/types';
-import { formatMessageDate } from '../utils/dateFormat';
-
-export type ChatPageProps = {
-  messages: IMessage[];
-  onLoadNextMessages?: () => void;
-  onSendMessage?: (message: string) => void;
-  activeUser?: string;
-  isLoading?: boolean;
-  isSending?: boolean;
-  hasNoNewMessages?: boolean;
-};
+import { ChatPageProps, defaultMessageRowHeight } from '../types/types';
+import { MessageThreadRow } from '../components/MessageThreadRow';
 
 export const ChatPage = ({
   messages,
+  onLoadNextMessages,
+  onSendMessage,
+  activeUser,
   isLoading = false,
   isSending = false,
   hasNoNewMessages = false,
-  onLoadNextMessages = () => undefined,
-  onSendMessage = () => undefined,
-  activeUser = 'Maddie',
 }: ChatPageProps) => {
   const [messageValue, setMessageValue] = useState('');
-  const bottomSentinelRef = useRef<HTMLDivElement | null>(null);
+  const listRef = useRef<ListImperativeAPI | null>(null);
+  const rowHeight = useDynamicRowHeight({
+    defaultRowHeight: defaultMessageRowHeight,
+    key: messages.length,
+  });
+  const previousMessagesLengthRef = useRef(messages.length);
+  const requestedNextMessagesForLengthRef = useRef<number | null>(null);
+  const shouldScrollToSentMessageRef = useRef(false);
 
   useEffect(() => {
-    const bottomSentinel = bottomSentinelRef.current;
+    const previousMessagesLength = previousMessagesLengthRef.current;
+    const hasAppendedMessage = messages.length > previousMessagesLength;
 
-    if (
-      !bottomSentinel ||
-      isLoading ||
-      hasNoNewMessages ||
-      messages.length === 0 ||
-      typeof IntersectionObserver === 'undefined'
-    ) {
-      return;
+    if (shouldScrollToSentMessageRef.current && hasAppendedMessage) {
+      listRef.current?.scrollToRow({
+        align: 'end',
+        behavior: 'smooth',
+        index: messages.length - 1,
+      });
+      shouldScrollToSentMessageRef.current = false;
     }
 
-    const observer = new IntersectionObserver((entries) => {
-      const [entry] = entries;
+    if (shouldScrollToSentMessageRef.current && !isSending) {
+      shouldScrollToSentMessageRef.current = false;
+    }
 
-      if (entry?.isIntersecting) {
-        onLoadNextMessages();
+    previousMessagesLengthRef.current = messages.length;
+  }, [isSending, listRef, messages.length]);
+
+  const rowCount =
+    messages.length + (isLoading ? 1 : 0) + (hasNoNewMessages ? 1 : 0);
+  const rowProps = useMemo(
+    () => ({
+      activeUser,
+      hasNoNewMessages,
+      isLoading,
+      messages,
+    }),
+    [activeUser, hasNoNewMessages, isLoading, messages]
+  );
+  const handleRowsRendered = useCallback(
+    ({ stopIndex }: { startIndex: number; stopIndex: number }) => {
+      const lastMessageIndex = messages.length - 1;
+
+      if (
+        lastMessageIndex < 0 ||
+        stopIndex < lastMessageIndex ||
+        isLoading ||
+        hasNoNewMessages ||
+        requestedNextMessagesForLengthRef.current === messages.length
+      ) {
+        return;
       }
-    });
 
-    observer.observe(bottomSentinel);
+      requestedNextMessagesForLengthRef.current = messages.length;
+      onLoadNextMessages();
+    },
+    [hasNoNewMessages, isLoading, messages.length, onLoadNextMessages]
+  );
 
-    return () => {
-      observer.disconnect();
-    };
-  }, [hasNoNewMessages, isLoading, messages.length, onLoadNextMessages]);
-
-  const handleMessageChange: ChangeEventHandler<
-    HTMLInputElement | HTMLTextAreaElement
-  > = (e) => {
-    e.preventDefault();
-    setMessageValue(e.target.value);
+  const handleMessageChange = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement, Element>
+  ) => {
+    event.preventDefault();
+    setMessageValue(event.target.value);
   };
 
   const handleSendMessage = () => {
-    if (messageValue.trim() === '' && !isSending) {
+    if (messageValue.trim() === '' || isSending) {
       return;
     }
+    shouldScrollToSentMessageRef.current = true;
     onSendMessage(messageValue);
     setMessageValue('');
   };
@@ -97,40 +117,18 @@ export const ChatPage = ({
   return (
     <Box component="main" data-testid="chat-page" sx={ChatPageRootSx}>
       <Box data-testid="chat-page-inner" sx={ChatPageInnerSx}>
-        <Box data-testid="chat-page-thread" sx={ChatPageThreadSx}>
-          {messages.map((message) => (
-            <MessageBox
-              key={`${message.author}-${message.createdAt}`}
-              author={message.author}
-              message={message.message}
-              sentByActiveUser={message.author === activeUser}
-              createdAt={formatMessageDate(message.createdAt)}
-            />
-          ))}
-          {isLoading ? (
-            <Box data-testid="chat-page-loader" sx={ChatPageLoaderSx}>
-              <CircularProgress size={24} />
-            </Box>
-          ) : null}
-          {hasNoNewMessages ? (
-            <Typography
-              data-testid="chat-page-no-new-message"
-              sx={{
-                display: 'flex',
-                justifyContent: 'center',
-                textAlign: 'center',
-              }}
-              variant="caption"
-            >
-              No new message
-            </Typography>
-          ) : null}
-          <Box
-            aria-hidden="true"
-            data-testid="chat-page-bottom-sentinel"
-            ref={bottomSentinelRef}
-          />
-        </Box>
+        <List
+          data-testid="chat-page-thread"
+          defaultHeight={600}
+          listRef={listRef}
+          onRowsRendered={handleRowsRendered}
+          overscanCount={3}
+          rowComponent={MessageThreadRow}
+          rowCount={rowCount}
+          rowHeight={rowHeight}
+          rowProps={rowProps}
+          style={{ height: '100%', width: '100%' }}
+        />
       </Box>
 
       <Box data-testid="chat-page-composer" sx={ChatPageComposerSx}>

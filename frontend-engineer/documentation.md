@@ -35,10 +35,22 @@ React testing library, Jest
 **Documentation**
 Storybook
 
+**Performance optimization**
+React window
+
+**CI & Containerization**
+github workflow, docker, docker compose
+
+**Bundler**
+Vite
+
 ## Tasks
 
 - [x] Create the React and TypeScript app.
 - [x] Build the chat layout from the provided assets.
 - [x] Connect to the backend messages API.
 - [x] Implement message sending.
-- [ ] Add responsive and accessible interaction states.
+- [x] Add responsive and accessible interaction states.
+- [x] Improve message thread performance
+
+By using mui, a substantial number of accessibility comes built in. In cases where these are missing or required to be custom as demanded by the feature, I have also added the accessibility. An example case is in the MessageBox.tsx component.

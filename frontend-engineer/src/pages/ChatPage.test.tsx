@@ -35,9 +35,32 @@ const messages = [
   },
 ];
 
+const manyMessages = Array.from({ length: 1000 }, (_, index) => ({
+  _id: `${index}`,
+  author: index % 2 === 0 ? 'Maddie' : 'Ninja',
+  message: `Message ${index}`,
+  createdAt: `2026-07-07T18:${String(index % 60).padStart(2, '0')}:02.625Z`,
+}));
+
 describe('ChatPage', () => {
+  const onLoadNextMessages = jest.fn();
+  const onSendMessage = jest.fn();
+  const activeUser = 'Maddie';
+
+  beforeEach(() => {
+    onLoadNextMessages.mockReset();
+    onSendMessage.mockReset();
+  });
+
   it('renders the chat messages', () => {
-    renderChatPage(<ChatPage messages={messages} />);
+    renderChatPage(
+      <ChatPage
+        messages={messages}
+        onLoadNextMessages={onLoadNextMessages}
+        onSendMessage={onSendMessage}
+        activeUser={activeUser}
+      />
+    );
 
     expect(screen.getByText('Great resource, thanks')).toBeInTheDocument();
     expect(screen.getByText('THANKSSSS!!!!!')).toBeInTheDocument();
@@ -46,7 +69,14 @@ describe('ChatPage', () => {
   });
 
   it('renders the message composer', () => {
-    renderChatPage(<ChatPage messages={messages} />);
+    renderChatPage(
+      <ChatPage
+        messages={messages}
+        onLoadNextMessages={onLoadNextMessages}
+        onSendMessage={onSendMessage}
+        activeUser={activeUser}
+      />
+    );
 
     expect(
       screen.getByRole('textbox', { name: 'Message' })
@@ -55,17 +85,28 @@ describe('ChatPage', () => {
   });
 
   it('formats message timestamps for the date caption', () => {
-    renderChatPage(<ChatPage messages={messages} />);
+    renderChatPage(
+      <ChatPage
+        messages={messages}
+        onLoadNextMessages={onLoadNextMessages}
+        onSendMessage={onSendMessage}
+        activeUser={activeUser}
+      />
+    );
 
     expect(screen.getByText('07 July 2026 20:26')).toBeInTheDocument();
   });
 
   it('does not send a blank message', async () => {
     const user = userEvent.setup();
-    const onSendMessage = jest.fn();
 
     renderChatPage(
-      <ChatPage messages={messages} onSendMessage={onSendMessage} />
+      <ChatPage
+        messages={messages}
+        onLoadNextMessages={onLoadNextMessages}
+        activeUser={activeUser}
+        onSendMessage={onSendMessage}
+      />
     );
 
     await user.type(screen.getByRole('textbox', { name: 'Message' }), '   ');
@@ -75,61 +116,71 @@ describe('ChatPage', () => {
   });
 
   it('disables the send button while sending a message', () => {
-    renderChatPage(<ChatPage messages={messages} isSending />);
+    renderChatPage(
+      <ChatPage
+        messages={messages}
+        onLoadNextMessages={onLoadNextMessages}
+        onSendMessage={onSendMessage}
+        activeUser={activeUser}
+        isSending
+      />
+    );
 
     expect(screen.getByRole('button', { name: 'Send' })).toBeDisabled();
   });
 
-  it('requests the next page when the last message comes into frame', () => {
-    const onLoadNextMessages = jest.fn();
-    const originalIntersectionObserver = global.IntersectionObserver;
-    let intersectionCallback: IntersectionObserverCallback = () => undefined;
-
-    class MockIntersectionObserver implements IntersectionObserver {
-      readonly root = null;
-      readonly rootMargin = '';
-      readonly scrollMargin = '';
-      readonly thresholds = [];
-      disconnect = jest.fn();
-      observe = jest.fn();
-      takeRecords = jest.fn(() => []);
-      unobserve = jest.fn();
-
-      constructor(callback: IntersectionObserverCallback) {
-        intersectionCallback = callback;
-      }
-    }
-
-    global.IntersectionObserver = MockIntersectionObserver;
-
+  it('renders the message thread as a virtualized list', () => {
     renderChatPage(
-      <ChatPage messages={messages} onLoadNextMessages={onLoadNextMessages} />
+      <ChatPage
+        messages={manyMessages}
+        onLoadNextMessages={onLoadNextMessages}
+        onSendMessage={onSendMessage}
+        activeUser={activeUser}
+      />
     );
 
-    const intersectionObserverEntry: IntersectionObserverEntry = {
-      boundingClientRect: {} as DOMRectReadOnly,
-      intersectionRatio: 1,
-      intersectionRect: {} as DOMRectReadOnly,
-      isIntersecting: true,
-      rootBounds: null,
-      target: screen.getByTestId('chat-page-bottom-sentinel'),
-      time: 0,
-    };
+    expect(screen.getByTestId('chat-page-thread')).toHaveAttribute(
+      'role',
+      'list'
+    );
+    expect(screen.getAllByTestId('chat-page-message-row').length).toBeLessThan(
+      20
+    );
+  });
 
-    intersectionCallback(
-      [intersectionObserverEntry],
-      {} as IntersectionObserver
+  it('requests the next page when the last message row is rendered', () => {
+    renderChatPage(
+      <ChatPage
+        messages={messages}
+        onLoadNextMessages={onLoadNextMessages}
+        onSendMessage={onSendMessage}
+        activeUser={activeUser}
+      />
     );
 
     expect(onLoadNextMessages).toHaveBeenCalledTimes(1);
-
-    global.IntersectionObserver = originalIntersectionObserver;
   });
 });
 
 describe("ChatPage's layout", () => {
+  const onLoadNextMessages = jest.fn();
+  const onSendMessage = jest.fn();
+  const activeUser = 'Maddie';
+
+  beforeEach(() => {
+    onLoadNextMessages.mockReset();
+    onSendMessage.mockReset();
+  });
+
   it('renders the chat interface with the body background image', () => {
-    renderChatPage(<ChatPage messages={messages} />);
+    renderChatPage(
+      <ChatPage
+        messages={messages}
+        onLoadNextMessages={onLoadNextMessages}
+        onSendMessage={onSendMessage}
+        activeUser={activeUser}
+      />
+    );
 
     expect(screen.getByTestId('chat-page')).toHaveStyle({
       backgroundImage: 'url(/src/assets/Body BG.png)',
@@ -139,32 +190,64 @@ describe("ChatPage's layout", () => {
   });
 
   it('renders a full width message scroll container', () => {
-    renderChatPage(<ChatPage messages={messages} />);
+    renderChatPage(
+      <ChatPage
+        messages={messages}
+        onLoadNextMessages={onLoadNextMessages}
+        onSendMessage={onSendMessage}
+        activeUser={activeUser}
+      />
+    );
 
     expect(screen.getByTestId('chat-page-inner')).toHaveStyle({
       width: '100%',
-      overflowY: 'auto',
+      overflow: 'hidden',
     });
   });
 
-  it('renders a message thread with a max width of 640px', () => {
-    renderChatPage(<ChatPage messages={messages} />);
+  it('renders a full width virtualized message thread', () => {
+    renderChatPage(
+      <ChatPage
+        messages={messages}
+        onLoadNextMessages={onLoadNextMessages}
+        onSendMessage={onSendMessage}
+        activeUser={activeUser}
+      />
+    );
 
     expect(screen.getByTestId('chat-page-thread')).toHaveStyle({
-      maxWidth: '640px',
+      width: '100%',
+      height: '100%',
     });
   });
 
-  it('centers the message thread on the screen', () => {
-    renderChatPage(<ChatPage messages={messages} />);
+  it('centers message row content on the screen', () => {
+    renderChatPage(
+      <ChatPage
+        messages={messages}
+        onLoadNextMessages={onLoadNextMessages}
+        onSendMessage={onSendMessage}
+        activeUser={activeUser}
+      />
+    );
 
-    expect(screen.getByTestId('chat-page-thread')).toHaveStyle({
-      margin: '0px auto',
-    });
+    expect(screen.getAllByTestId('chat-page-message-row-inner')[0]).toHaveStyle(
+      {
+        maxWidth: '640px',
+        margin: '0px auto',
+      }
+    );
   });
 
   it('renders a primary colored message composer bar', () => {
-    renderChatPage(<ChatPage messages={messages} />);
+    renderChatPage(
+      <ChatPage
+        messages={messages}
+        onLoadNextMessages={onLoadNextMessages}
+        onSendMessage={onSendMessage}
+        activeUser={activeUser}
+      />
+    );
 
     expect(
       getComputedStyle(screen.getByTestId('chat-page-composer')).backgroundColor
@@ -172,7 +255,14 @@ describe("ChatPage's layout", () => {
   });
 
   it('lays out the input and send button in the composer', () => {
-    renderChatPage(<ChatPage messages={messages} />);
+    renderChatPage(
+      <ChatPage
+        messages={messages}
+        onLoadNextMessages={onLoadNextMessages}
+        onSendMessage={onSendMessage}
+        activeUser={activeUser}
+      />
+    );
 
     expect(screen.getByTestId('chat-page-composer')).toContainElement(
       screen.getByTestId('input-field')
@@ -183,15 +273,29 @@ describe("ChatPage's layout", () => {
   });
 
   it('centers the input and send button row on the screen', () => {
-    renderChatPage(<ChatPage messages={messages} />);
+    renderChatPage(
+      <ChatPage
+        messages={messages}
+        onLoadNextMessages={onLoadNextMessages}
+        onSendMessage={onSendMessage}
+        activeUser={activeUser}
+      />
+    );
 
     expect(screen.getByTestId('chat-page-composer-inner')).toHaveStyle({
       marginLeft: 'auto',
       marginRight: 'auto',
     });
   });
-  it('sets padding to 8px around message composer and button', () => {
-    renderChatPage(<ChatPage messages={messages} />);
+  it('sets composer inner padding to 8px around message composer and button', () => {
+    renderChatPage(
+      <ChatPage
+        messages={messages}
+        onLoadNextMessages={onLoadNextMessages}
+        onSendMessage={onSendMessage}
+        activeUser={activeUser}
+      />
+    );
 
     expect(screen.getByTestId('chat-page-composer-inner')).toHaveStyle({
       padding: '8px',
@@ -200,7 +304,15 @@ describe("ChatPage's layout", () => {
   });
 
   it('renders and centers a loading indicator while messages are being fetched ', () => {
-    renderChatPage(<ChatPage messages={messages} isLoading />);
+    renderChatPage(
+      <ChatPage
+        messages={messages}
+        onLoadNextMessages={onLoadNextMessages}
+        onSendMessage={onSendMessage}
+        activeUser={activeUser}
+        isLoading
+      />
+    );
 
     expect(screen.getByRole('progressbar')).toBeInTheDocument();
     expect(screen.getByTestId('chat-page-loader')).toHaveStyle({
@@ -211,7 +323,15 @@ describe("ChatPage's layout", () => {
   });
 
   it('renders the no new message text centered after the message list', () => {
-    renderChatPage(<ChatPage messages={messages} hasNoNewMessages />);
+    renderChatPage(
+      <ChatPage
+        messages={messages}
+        onLoadNextMessages={onLoadNextMessages}
+        onSendMessage={onSendMessage}
+        activeUser={activeUser}
+        hasNoNewMessages
+      />
+    );
 
     expect(screen.getByText('No new message')).toBeInTheDocument();
     expect(screen.getByTestId('chat-page-no-new-message')).toHaveStyle({

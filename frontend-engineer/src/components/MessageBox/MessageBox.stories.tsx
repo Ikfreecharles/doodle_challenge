@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Box } from '@mui/material';
-
 import { MessageBox } from './MessageBox';
 
 const meta = {

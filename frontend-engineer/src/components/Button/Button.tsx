@@ -1,5 +1,4 @@
 import { Button as MuiButton } from '@mui/material';
-
 import { ButtonSx } from './Button.styles';
 
 export type ButtonProps = {
