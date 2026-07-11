@@ -43,10 +43,23 @@ export const ChatPage = ({
     const hasAppendedMessage = messages.length > previousMessagesLength;
 
     if (shouldScrollToSentMessageRef.current && hasAppendedMessage) {
-      listRef.current?.scrollToRow({
+      const list = listRef.current;
+
+      requestedNextMessagesForLengthRef.current = messages.length;
+      list?.scrollToRow({
         align: 'end',
-        behavior: 'smooth',
+        behavior: 'instant',
         index: messages.length - 1,
+      });
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          const listElement = list?.element;
+
+          listElement?.scrollTo({
+            behavior: 'instant',
+            top: listElement.scrollHeight,
+          });
+        });
       });
       shouldScrollToSentMessageRef.current = false;
     }
@@ -78,6 +91,7 @@ export const ChatPage = ({
         stopIndex < lastMessageIndex ||
         isLoading ||
         hasNoNewMessages ||
+        shouldScrollToSentMessageRef.current ||
         requestedNextMessagesForLengthRef.current === messages.length
       ) {
         return;
